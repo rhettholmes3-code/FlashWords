@@ -74,14 +74,21 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 
                 _buildSection(
-                  '数据管理',
+                  '词典设置',
                   [
-                    _buildListTile(
-                      '从API更新',
-                      '从在线API获取新单词',
-                      Icons.cloud_download,
-                      () => _updateFromAPI(context, wordProvider),
+                    _buildSwitchTile(
+                      '使用本地雅思词典',
+                      '使用内置的雅思词汇库，无需网络连接',
+                      wordProvider.useLocalDictionary,
+                      (value) => wordProvider.setUseLocalDictionary(value),
                     ),
+                    if (!wordProvider.useLocalDictionary)
+                      _buildListTile(
+                        '从API更新',
+                        '从在线API获取新单词',
+                        Icons.cloud_download,
+                        () => _updateFromAPI(context, wordProvider),
+                      ),
                   ],
                 ),
                 

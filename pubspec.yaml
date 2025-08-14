@@ -1,4 +1,4 @@
-name: flash_words
+name: flashwords
 description: 单词闪现 - 跨平台背单词屏保应用
 publish_to: 'none'
 version: 1.0.0+1

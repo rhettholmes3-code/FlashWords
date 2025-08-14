@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/word.dart';
+import '../data/ielts_vocabulary.dart';
 
 class WordService {
-  static const String _settingsKey = 'flash_words_settings';
   static const String _wordsKey = 'flash_words_data';
   
   List<Word> _words = [];
@@ -99,10 +99,9 @@ class WordService {
   }
 
   Future<void> _initializeSampleData() async {
-    for (final wordData in _sampleWords) {
-      final word = Word.fromJson(wordData);
-      _words.add(word);
-    }
+    // 使用雅思词汇数据初始化
+    final ieltsWords = IeltsVocabulary.getIeltsWords();
+    _words.addAll(ieltsWords);
     await _saveWords();
   }
 
@@ -113,7 +112,9 @@ class WordService {
       words = words.where((word) => word.level == level).toList();
     }
     
-    if (words.isEmpty) return null;
+    if (words.isEmpty) {
+      return null;
+    }
     
     final random = Random();
     return words[random.nextInt(words.length)];
@@ -180,6 +181,14 @@ class WordService {
 
   Future<String> getTheme() async {
     return _prefs.getString('theme') ?? 'light';
+  }
+
+  Future<void> setUseLocalDictionary(bool useLocal) async {
+    await _prefs.setBool('useLocalDictionary', useLocal);
+  }
+
+  Future<bool> getUseLocalDictionary() async {
+    return _prefs.getBool('useLocalDictionary') ?? true; // 默认使用本地词典
   }
 
   // API相关方法（模拟）

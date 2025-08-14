@@ -16,6 +16,7 @@ class WordProvider with ChangeNotifier {
   bool _showSynonyms = true;
   bool _showExample = true;
   String _theme = 'light';
+  bool _useLocalDictionary = true; // 默认使用本地词典
   
   // Getters
   Word? get currentWord => _currentWord;
@@ -27,6 +28,7 @@ class WordProvider with ChangeNotifier {
   bool get showSynonyms => _showSynonyms;
   bool get showExample => _showExample;
   String get theme => _theme;
+  bool get useLocalDictionary => _useLocalDictionary;
   
   Future<void> initialize() async {
     try {
@@ -46,6 +48,7 @@ class WordProvider with ChangeNotifier {
     _showSynonyms = await _wordService.getShowSynonyms();
     _showExample = await _wordService.getShowExample();
     _theme = await _wordService.getTheme();
+    _useLocalDictionary = await _wordService.getUseLocalDictionary();
     notifyListeners();
   }
   
@@ -183,7 +186,24 @@ class WordProvider with ChangeNotifier {
     }
   }
   
+  Future<void> setUseLocalDictionary(bool useLocal) async {
+    try {
+      await _wordService.setUseLocalDictionary(useLocal);
+      _useLocalDictionary = useLocal;
+      notifyListeners();
+    } catch (e) {
+      _error = '设置词典模式失败: $e';
+      notifyListeners();
+    }
+  }
+  
   Future<void> fetchWordsFromAPI() async {
+    if (_useLocalDictionary) {
+      _error = '当前使用本地词典模式，无法从API获取单词';
+      notifyListeners();
+      return;
+    }
+    
     _isLoading = true;
     _error = '';
     notifyListeners();

@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'providers/word_provider.dart';
 import 'screens/home_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const FlashWordsApp());
 }
 
@@ -13,7 +14,12 @@ class FlashWordsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => WordProvider(),
+      create: (context) {
+        final provider = WordProvider();
+        // 立即初始化
+        provider.initialize();
+        return provider;
+      },
       child: MaterialApp(
         title: '单词闪现',
         debugShowCheckedModeBanner: false,

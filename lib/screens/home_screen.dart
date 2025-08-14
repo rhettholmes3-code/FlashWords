@@ -26,9 +26,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
     
-    // 初始化数据
+    // 启动动画
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WordProvider>().initialize();
+      _playFadeAnimation();
     });
   }
 
@@ -81,33 +81,81 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildTopBar(WordProvider wordProvider) {
     return Container(
       padding: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          // 标题
-          const Text(
-            '单词闪现',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2C3E50),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // 标题
+              const Text(
+                '单词闪现',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2C3E50),
+                ),
+              ),
+              
+              // 设置按钮
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.settings),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.8),
+                  foregroundColor: const Color(0xFF2C3E50),
+                ),
+              ),
+            ],
           ),
           
-          // 设置按钮
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
+          // 词典模式指示器
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: wordProvider.useLocalDictionary 
+                ? Colors.green.withOpacity(0.1) 
+                : Colors.blue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: wordProvider.useLocalDictionary 
+                  ? Colors.green.withOpacity(0.3) 
+                  : Colors.blue.withOpacity(0.3),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  wordProvider.useLocalDictionary 
+                    ? Icons.book 
+                    : Icons.cloud,
+                  size: 16,
+                  color: wordProvider.useLocalDictionary 
+                    ? Colors.green 
+                    : Colors.blue,
                 ),
-              );
-            },
-            icon: const Icon(Icons.settings),
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.8),
-              foregroundColor: const Color(0xFF2C3E50),
+                const SizedBox(width: 4),
+                Text(
+                  wordProvider.useLocalDictionary 
+                    ? '本地雅思词典' 
+                    : '在线API',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: wordProvider.useLocalDictionary 
+                      ? Colors.green 
+                      : Colors.blue,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
